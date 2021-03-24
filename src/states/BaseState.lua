@@ -1,11 +1,8 @@
 BaseState = Class{}
 
 -- Generic object manager 
-function BaseState:init()
-    self.objManager = ObjManager()
-end
-
-function BaseState:enter() end
+function BaseState:init() end
+function BaseState:enter() objManager = ObjManager() end
 function BaseState:exit() end
-function BaseState:update(dt) self.objManager:update(dt) end
-function BaseState:render() self.objManager:render() end
+function BaseState:update(dt) objManager:update(dt) end
+function BaseState:render() objManager:render() end

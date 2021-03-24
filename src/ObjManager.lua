@@ -4,7 +4,7 @@ function ObjManager:init(objects)
     self.objects = objects or {}
 end
 
-function ObjManager:update()
+function ObjManager:update(dt)
     for k, object in pairs(self.objects) do
         if object.flag == 'removed' then
             --[[
@@ -17,7 +17,7 @@ function ObjManager:update()
             ]]
             self.objects[k] = nil
         elseif object.flag ~= 'disabled' then
-            object:update()
+            object:update(dt)
         end
     end
 end
@@ -30,9 +30,9 @@ function ObjManager:render()
     end
 end
 
--- Takes an Object table and adds it to the self.objects table
-function ObjManager:addObj(objectTable)
-    for k, object in pairs(objectTable) do
+-- Takes a table of objects and adds it to the self.objects table
+function ObjManager:addObj(objects)
+    for k, object in pairs(objects) do
         table.insert(self.objects, object)
     end
 end
