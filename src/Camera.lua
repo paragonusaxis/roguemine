@@ -6,7 +6,7 @@ function Camera:init(x, y, zoom, rotation, speed)
     self.angle = zoom or 0 
     self.rotation = rotation or 0
     self.spd = speed or 100
-    self.stifness = 5
+    self.stiffness = 5
 
     self.w = love.graphics.getWidth()
     self.h = love.graphics.getHeight()
@@ -57,8 +57,8 @@ function Camera:moveX(dx, method, speed, stiffness)
         local speed = speed or self.spd
         dx = self:linear(dx, 0, speed)
     elseif method == 'ease' then
-        local stifness = stifness or self.stifness
-        dx = self:ease(dx, 0, stifness)
+        local stiffness = stiffness or self.stiffness
+        dx = self:ease(dx, 0, stiffness)
     end
 
     self.x = self.x + dx
@@ -72,8 +72,8 @@ function Camera:moveY(dy, method, speed, stiffness)
         local speed = speed or self.spd
         _, dy = self:linear(0, dy, speed)
     elseif method == 'ease' then
-        local stifness = stifness or self.stifness
-        _, dy = self:ease(0, dy, stifness)
+        local stiffness = stiffness or self.stiffness
+        _, dy = self:ease(0, dy, stiffness)
     end
 
     self.y = self.y + dy
@@ -88,8 +88,8 @@ function Camera:move(dx, dy, method, speed, stiffness)
         local speed = speed or self.spd
         dx, dy = self:linear(dx, dy, speed)
     elseif method == 'ease' then
-        local stifness = stifness or self.stifness
-        dx, dy = self:ease(dx, dy, stifness)
+        local stiffness = stiffness or self.stiffness
+        dx, dy = self:ease(dx, dy, stiffness)
     end
 
     self.x = self.x + dx
@@ -104,22 +104,22 @@ end
     Method and stiffness in case you want easing, if there is easing, be sure not to start
     the camera out of bounds of the world, else it will be eased into bounds and it will look weird.
 ]]
-function Camera:lock(object, worldW, worldH, method, speed, stifness)
+function Camera:lock(object, worldW, worldH, method, speed, stiffness)
     local dts = love.timer.getDelta()
     if object.x < self.w/(2 * self.angle) then
-        self:moveX(self.w/(2 * self.angle) - self.x, method, speed, stifness)
+        self:moveX(self.w/(2 * self.angle) - self.x, method, speed, stiffness)
     elseif object.x > worldW - self.w/(2 * self.angle) then
-        self:moveX((worldW - self.w/(2 * self.angle)) - self.x, method, speed, stifness)
+        self:moveX((worldW - self.w/(2 * self.angle)) - self.x, method, speed, stiffness)
     else
-        self:moveX(object.x - self.x, method, speed, stifness)
+        self:moveX(object.x - self.x, method, speed, stiffness)
     end
 
     if object.y < self.h/(2 * self.angle) then
-        self:moveY(self.h/(2 * self.angle) - self.y, method, speed, stifness)
+        self:moveY(self.h/(2 * self.angle) - self.y, method, speed, stiffness)
     elseif object.y > worldH - self.h/(2 * self.angle) then
-        self:moveY((worldH - self.h/(2 * self.angle)) - self.y, method, speed, stifness)
+        self:moveY((worldH - self.h/(2 * self.angle)) - self.y, method, speed, stiffness)
     else
-        self:moveY(object.y - self.y, method, speed, stifness)
+        self:moveY(object.y - self.y, method, speed, stiffness)
     end
 end
 

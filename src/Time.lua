@@ -32,7 +32,7 @@ function Time:after(time, func)
         ['flag'] = 1, 
         ['func'] = func,
         ['current'] = 0,
-        -- counter is 1 because this will happen just ocne
+        -- counter is 1 because this will happen just once
         ['counter'] = 1
     })
 
@@ -105,6 +105,7 @@ function Time:clear()
     self.timers = {}
 end
 
+-- CLAMP RESULTS
 -- update function for times, this is called in love.update(dt)
 function Time:update(dt)
     for k, timer in pairs(self.timers) do
@@ -117,13 +118,17 @@ function Time:update(dt)
                 -- checks method and tweens stuff, some crazy math ahead, tread carefully
                 if timer.tween.method == 'linear' then
                     for k, v in pairs(timer.tween.change) do
-                        timer.tween.object[k] = timer.tween.object[k] + (v/timer.time) * dt
+                        timer.tween.object[k] = clamp(timer.tween.object[k] + (v/timer.time) * dt,
+                            timer.tween.refs[k]['start'], timer.tween.refs[k]['finish']
+                        ) 
                     end
                 elseif timer.tween.method == 'easein' then
                     for k, v in pairs(timer.tween.change) do
                         local a = (2 * v)/(timer.time)^2
                         local vel = a * (timer.current)
-                        timer.tween.object[k] = timer.tween.object[k] + vel * dt + (a * dt^2)/2
+                        timer.tween.object[k] = clamp(timer.tween.object[k] + vel * dt + (a * dt^2)/2, 
+                            timer.tween.refs[k]['start'], timer.tween.refs[k]['finish']
+                        )
                     end
                 elseif timer.tween.method == 'easeout' then
                     for k, v in pairs(timer.tween.change) do
@@ -131,7 +136,9 @@ function Time:update(dt)
                         local fVel = a * timer.time 
                         local vel = fVel - a * (timer.current)
                         print(vel)
-                        timer.tween.object[k] = timer.tween.object[k] + vel * dt + (a * dt^2)/2
+                        timer.tween.object[k] = clamp(timer.tween.object[k] + vel * dt + (a * dt^2)/2, 
+                            timer.tween.refs[k]['start'], timer.tween.refs[k]['finish']
+                        )
                     end
                 -- This somehow works and I don't know why...
                 elseif timer.tween.method == 'easeinout' then
@@ -150,7 +157,9 @@ function Time:update(dt)
                             vel = fVel - a * (timer.current)
                         end
 
-                        timer.tween.object[k] = timer.tween.object[k] + vel * dt + (a * dt^2)/2
+                        timer.tween.object[k] = clamp(timer.tween.object[k] + vel * dt + (a * dt^2)/2,
+                            timer.tween.refs[k]['start'], timer.tween.refs[k]['finish']
+                        )
                     end
                 end                            
             end
@@ -258,6 +267,7 @@ function Time:tween(duration, object, target, method, after)
     -- some default stuff
     local method = method or 'linear'
     local change = {}
+    local refs = {}
     local after = after or function () end
 
     -- go through target
@@ -271,6 +281,9 @@ function Time:tween(duration, object, target, method, after)
 
         -- adds the DIFFERENCE between TARGET and ORIGINAL FIELD to change[key]
         change[k] = (entry - object[k])
+        refs[k] = {}
+        refs[k]['start'] =  object[k]
+        refs[k]['finish'] = entry
     end
 
     -- creates a timer that will handle this tweening function, this timer
@@ -284,7 +297,8 @@ function Time:tween(duration, object, target, method, after)
         ['tween'] = {
             ['method'] = method,
             ['object'] = object,
-            ['change'] = change
+            ['change'] = change,
+            ['refs'] = refs
         }
     })
 

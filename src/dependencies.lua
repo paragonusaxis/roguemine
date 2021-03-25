@@ -1,5 +1,7 @@
 Class = require 'lib/class'
 
+require 'lib/utils'
+
 require 'src/constants'
 
 require 'src/StateMachine'
@@ -10,7 +12,7 @@ require 'src/Time'
 require 'src/Animation'
 require 'src/Animator'
 
-require 'src/objects/Skeleton'
+require 'src/objects/Player'
 
 require 'src/states/BaseState'
 require 'src/states/PlayState'

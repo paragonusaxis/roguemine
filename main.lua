@@ -13,7 +13,7 @@ function love.load()
     -- graphical assets
     graphics = {
         map = love.graphics.newImage('graphics/map.png'),
-        skeleton = love.graphics.newImage('graphics/skeleton-sprite.png')
+        topero = love.graphics.newImage('graphics/topero.png')
     }
 
     -- creates a time manager

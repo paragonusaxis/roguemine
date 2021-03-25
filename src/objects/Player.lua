@@ -8,21 +8,26 @@
     and functionality.
 
     All in all, this works fine...
+
+    UPDATE: AFTER REMOVAL OF SOME ORIENTATIOS, THIS REALLY NEEDS TO BE REDONE ASAP
+    THIS + PLAYER CODE IN PLAYSTATE IS A POS!!!!!!!!!!!
 ]]
 
-Skeleton = Class{__includes = Obj}
+Player = Class{__includes = Obj}
 
-function Skeleton:init()
+function Player:init()
     -- position variables
     self.x = 0
     self.y = 0
 
-    -- walking speed
+    -- walking speed and velocities
     self.speed = 80
+    self.dx = self.speed
+    self.dy = self.speed
     
     -- dimensions of object, this will be later utilized for collision detection
-    self.width = 16
-    self.height = 26
+    self.width = 19
+    self.height = 24
 
     -- this important flag tells the object manager, which this object was added to,
     -- that this object should be visible on this state. Check the ObjManager class for more info
@@ -30,66 +35,53 @@ function Skeleton:init()
     self.flag = 'visible'
 
     -- some variables to flag when stuff happens. This will help with the manipulation of animations later
-    self.orientation = 'down'
+    self.orientation = 'right'
     self.state = 'idle'
 
     -- the texture of the object, this texture is actually stored in a global table in main.lua
-    self.texture = graphics.skeleton
+    self.texture = graphics.topero
 
     -- time between frames of all animations of this character, you don't actually need to make them all
     -- the same, but I did cause I'm lazy!
-    self.animationTime = 0.2
+    self.animationTime = 0.07
 
     -- table with all the character animations, 8 in total, I used the naming convention
     -- "state-orientation" because later on I did a little trick to reduce lines of code, but
     -- this could technically be anything you want.
     self.animations = {
-        ['walk-right'] = Animation(self.animationTime, 2, self.width, self.height, self.texture),
-        ['walk-left'] = Animation(self.animationTime, 2, self.width, self.height, self.texture),
-        ['walk-up'] = Animation(self.animationTime, 2, self.width, self.height, self.texture, self.width *2),
-        ['walk-down'] = Animation(self.animationTime, 2, self.width, self.height, self.texture, self.width * 4),
-        ['idle-right'] = Animation(self.animationTime, 1, self.width, self.height, self.texture),
-        ['idle-left'] = Animation(self.animationTime, 1, self.width, self.height, self.texture),
-        ['idle-up'] = Animation(self.animationTime, 1, self.width, self.height, self.texture, self.width *2),
-        ['idle-down'] = Animation(self.animationTime, 1, self.width, self.height, self.texture, self.width * 4)
+        ['walk-right'] = Animation(self.animationTime, 13, self.width, self.height, self.texture, 8 * self.width),
+        ['walk-left'] = Animation(self.animationTime, 13, self.width, self.height, self.texture, 8 * self.width),
+        ['idle-right'] = Animation(self.animationTime, 8, self.width, self.height, self.texture),
+        ['idle-left'] = Animation(self.animationTime, 8, self.width, self.height, self.texture)
     }
 
     -- creates the animator and passes the starting animation, "idle-down", which are the current state
     -- and current orientation
-    self.animator = Animator(self.animations['idle-down'])
+    self.animator = Animator(self.animations['idle-right'])
 
 end
 
-function Skeleton:update(dt)
-    -- defaults to idle, if no input happens, this will remain true
-    self.state = 'idle'
-    
-    -- handles input, updates player's position, updates state and orientation
-    if love.keyboard.isDown('left') then
-        self.x = math.max(self.x - self.speed * dt, 0)
+function Player:update(dt)    
+    -- in playstate we default the player state to idle at every update
+    -- ideally this should be done in another way, with better input module based
+    -- on presed/released callbacks, but this is fine for now
 
-        self.state = 'walk'
-        self.orientation = 'left'
-    elseif love.keyboard.isDown('right') then
-        self.x = math.min(self.x + self.speed * dt, worldW)
+    -- checks if walking and updates position
+    if self.state == 'walk' then
+        if self.dx < 0 then
+            self.x = math.max(self.x + self.dx * dt, 0)
+        else
+            self.x = math.min(self.x + self.dx * dt, worldW)
+        end
         
-        self.state = 'walk'
-        self.orientation = 'right'
+        if self.dy < 0 then
+            self.y = math.max(self.y + self.dy * dt, 0)
+        else
+            self.y = math.min(self.y + self.dy * dt, worldH)
+        end
     end
 
-    if love.keyboard.isDown('up') then
-        self.y = math.max(self.y - self.speed * dt, 0)
-
-        self.state = 'walk' 
-        self.orientation = 'up'
-    elseif love.keyboard.isDown('down') then
-        self.y = math.min(self.y + self.speed * dt, worldH)
-
-        self.state = 'walk' 
-        self.orientation = 'down'
-    end
-
-    -- if up to this point we are still in idle state, then no input was received
+    -- if up to this point we are still in idle state, then no input was received on the playstate
     -- so now we just concatenate a string to now current state and positionement
     -- and then change the animation by indexing our animations table with the string
     -- as index
@@ -103,7 +95,7 @@ end
 -- the x-axis and with an offset to compensate.
 -- since I did that little trick with the string concat on update, I actually had to create animation objects 
 -- for the left side animations, even though they are exact copies of the right side animations.
-function Skeleton:render()
+function Player:render()
     if self.orientation == 'left' then
         love.graphics.draw(self.animator:getTexture(), self.animator:getQuad(), self.x + 16, self.y, 0, -1, 1)
     else
