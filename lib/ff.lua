@@ -1,4 +1,4 @@
-require 'queue'
+require 'lib/queue'
 function FloodFill(x, y, map, value)
     Q = List.new()
     if map[x][y] == 0 then

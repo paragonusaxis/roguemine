@@ -11,3 +11,7 @@ function clamp(v, min, max)
     end
     if v < _min then return _min elseif v > _max then return _max else return v end
 end
+
+function sigmoid(x)
+     return tonumber(1/(1 + math.exp(-x)))
+ end

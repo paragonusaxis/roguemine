@@ -21,11 +21,16 @@ function PlayState:enter()
     -- creates a player
     player = Player()
 
+    -- creates Tilemap
+    tilemap = Tilemap(100, 100)
+
     -- creates an object manager for the state
     objManager = ObjManager()
     
     -- adds the player to the manager. Don't forget the objects must be inside a table
+    objManager:addObj({tilemap})
     objManager:addObj({player})
+    
 end
 
 -- update for the state
@@ -76,7 +81,7 @@ function PlayState:render()
     camera:attach()
 
     -- draws map
-    love.graphics.draw(map)
+    -- love.graphics.draw(map)
 
     -- draws objects
     objManager:render()

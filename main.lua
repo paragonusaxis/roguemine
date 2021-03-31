@@ -13,7 +13,8 @@ function love.load()
     -- graphical assets
     graphics = {
         map = love.graphics.newImage('graphics/map.png'),
-        topero = love.graphics.newImage('graphics/topero.png')
+        topero = love.graphics.newImage('graphics/topero.png'),
+        tilemap = love.graphics.newImage('graphics/tileset.png')
     }
 
     -- creates a time manager
