@@ -3,7 +3,7 @@ Camera = Class{}
 function Camera:init(x, y, zoom, rotation, speed)
     self.x = x or 0 
     self.y = y or 0 
-    self.angle = zoom or 0 
+    self.scale = zoom or 0 
     self.rotation = rotation or 0
     self.spd = speed or 100
     self.stiffness = 5
@@ -17,10 +17,10 @@ end
 ]]
 function Camera:attach()
     love.graphics.push()
-    love.graphics.translate(self.w/2, self.h/2)
-    love.graphics.scale(self.angle)
-    love.graphics.rotate(self.rotation)
-    love.graphics.translate(-self.x, -self.y)
+    love.graphics.translate(math.floor(self.w/2), math.floor(self.h/2))
+    love.graphics.scale(math.floor(self.scale))
+    love.graphics.rotate(math.floor(self.rotation))
+    love.graphics.translate(math.floor(-self.x), math.floor(-self.y))
 end
 
 function Camera:detach()
@@ -106,18 +106,18 @@ end
 ]]
 function Camera:lock(object, worldW, worldH, method, speed, stiffness)
     local dts = love.timer.getDelta()
-    if object.x < self.w/(2 * self.angle) then
-        self:moveX(self.w/(2 * self.angle) - self.x, method, speed, stiffness)
-    elseif object.x > worldW - self.w/(2 * self.angle) then
-        self:moveX((worldW - self.w/(2 * self.angle)) - self.x, method, speed, stiffness)
+    if object.x < self.w/(2 * self.scale) then
+        self:moveX(self.w/(2 * self.scale) - self.x, method, speed, stiffness)
+    elseif object.x > worldW - self.w/(2 * self.scale) then
+        self:moveX((worldW - self.w/(2 * self.scale)) - self.x, method, speed, stiffness)
     else
         self:moveX(object.x - self.x, method, speed, stiffness)
     end
 
-    if object.y < self.h/(2 * self.angle) then
-        self:moveY(self.h/(2 * self.angle) - self.y, method, speed, stiffness)
-    elseif object.y > worldH - self.h/(2 * self.angle) then
-        self:moveY((worldH - self.h/(2 * self.angle)) - self.y, method, speed, stiffness)
+    if object.y < self.h/(2 * self.scale) then
+        self:moveY(self.h/(2 * self.scale) - self.y, method, speed, stiffness)
+    elseif object.y > worldH - self.h/(2 * self.scale) then
+        self:moveY((worldH - self.h/(2 * self.scale)) - self.y, method, speed, stiffness)
     else
         self:moveY(object.y - self.y, method, speed, stiffness)
     end
@@ -125,28 +125,28 @@ end
 
 -- transforms screen coordinates to world coordinates
 function Camera:worldCoords(x, y)
-    local worldX = self.x + (x - self.w/2) / self.angle
-    local worldY = self.y  + (y - self.h/2) / self.angle
+    local worldX = self.x + (x - self.w/2) / self.scale
+    local worldY = self.y  + (y - self.h/2) / self.scale
 
     return worldX, worldY
 end
 
 -- transforms world coordinates to screen coordinates
 function Camera:screenCoords(x, y)
-    local screenX = (x - self.x) * self.angle + w/2
-    local screenY = (y - self.y) * self.angle + h/2
+    local screenX = (x - self.x) * self.scale + w/2
+    local screenY = (y - self.y) * self.scale + h/2
 
     return screenX, screenY
 end
 
 -- multiplies current zoom setting
 function Camera:zoom(zoom)
-    self.angle = self.angle * zoom
+    self.scale = self.scale * zoom
 end
 
 -- changes camera zoom to the specified value
 function Camera:zoomTo(zoom)
-    self.angle = zoom
+    self.scale = zoom
 end
 
 -- sets camera rotation to a specific angle

@@ -43,7 +43,8 @@ function Player:init()
 
     -- time between frames of all animations of this character, you don't actually need to make them all
     -- the same, but I did cause I'm lazy!
-    self.animationTime = 0.07
+    self.animationTime = 0.05
+    self.animationTimeIdle = 0.07
 
     -- table with all the character animations, 8 in total, I used the naming convention
     -- "state-orientation" because later on I did a little trick to reduce lines of code, but
@@ -51,8 +52,8 @@ function Player:init()
     self.animations = {
         ['walk-right'] = Animation(self.animationTime, 13, self.width, self.height, self.texture, 8 * self.width),
         ['walk-left'] = Animation(self.animationTime, 13, self.width, self.height, self.texture, 8 * self.width),
-        ['idle-right'] = Animation(self.animationTime, 8, self.width, self.height, self.texture),
-        ['idle-left'] = Animation(self.animationTime, 8, self.width, self.height, self.texture)
+        ['idle-right'] = Animation(self.animationTimeIdle, 8, self.width, self.height, self.texture),
+        ['idle-left'] = Animation(self.animationTimeIdle, 8, self.width, self.height, self.texture)
     }
 
     -- creates the animator and passes the starting animation, "idle-down", which are the current state

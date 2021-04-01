@@ -14,15 +14,14 @@ function PlayState:enter()
     -- sets the map for the current state, this map is stored in a table in love.load
     map = graphics.map
 
-    -- gets size of word base on map
-    worldW = map:getWidth()
-    worldH = map:getHeight()
-
     -- creates a player
     player = Player()
 
     -- creates Tilemap
-    tilemap = Tilemap(100, 100)
+    tilemap = Tilemap(50, 50)
+
+    -- gets size of word base on map
+    worldW, worldH = tilemap:mapSize()
 
     -- creates an object manager for the state
     objManager = ObjManager()

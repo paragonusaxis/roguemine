@@ -17,7 +17,7 @@ function Animator:start()
     self.currentAnimation:start()
 end
 
--- stops the current animation, timer to next frame gets reseted
+-- stops the current animation, timer to next frame gets reset
 function Animator:stop()
     self.currentAnimation:stop()
 end

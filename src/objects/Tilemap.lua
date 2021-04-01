@@ -1,7 +1,7 @@
 Tilemap = Class{__includes = Obj}
 
 local ilist = {{-1,-1}, {0,-1}, {1,-1}, {1,0}, {1,1}, {0,1}, {-1,1}, {-1,0}}
-local bmask_pair = {{221, 28}, {119, 7}, {85, 69}, {85,81}, {245, 4}, {125, 1}, {1, 2}, {119, 112}, {221, 193}, {85, 21}, {85, 84}, {95, 64}, {215, 16}, {1, 2}}
+local bmask_pair = {{221, 28}, {119, 7}, {85, 69}, {85,81}, {245, 4}, {125, 1}, {1, 2}, {247, 247}, {127,127} , {119, 112}, {221, 193}, {85, 21}, {85, 84}, {95, 64}, {215, 16}, {1, 2}, {223,223}, {253, 253}}
 
 
 local bit = require("bit")
@@ -35,6 +35,22 @@ function Tilemap:generateCave(interations)
     SolveWallEdgeTiles(self._map, w, h)
 end
 
+function Tilemap:get(x, y)
+    return self._map[x][y]
+end
+
+function Tilemap:set(x, y, value)
+    self._map[x][y] = value
+end
+
+function Tilemap:getSize()
+    return self.width, self.height
+end
+
+function Tilemap:mapSize()
+    return self.width*self.tile_w, self.height*self.tile_h
+end
+
 function Tilemap:render()
     local w = self.width
     local h = self.height
@@ -54,11 +70,12 @@ function Tilemap:render()
                 -- love.graphics.setColor(0,1,0,1)
                 -- love.graphics.rectangle("fill", i*TILE_SIZE, j*TILE_SIZE, TILE_SIZE, TILE_SIZE)
             elseif v == 1 then
-                love.graphics.draw(self.tile_set, self.quads[14], (i-1)*tw, (j-1)*th)
+                love.graphics.draw(self.tile_set, self.quads[7], (i-1)*tw, (j-1)*th)
             else 
-                love.graphics.setColor(0.7,0.7,0.7,1)
-                love.graphics.rectangle("fill", (i-1)*tw, (j-1)*th, tw, th)
-                love.graphics.setColor(1,1,1,1)
+                -- love.graphics.setColor(0.7,0.7,0.7,1)
+                -- love.graphics.rectangle("fill", (i-1)*tw, (j-1)*th, tw, th)
+                -- love.graphics.setColor(1,1,1,1)
+                love.graphics.draw(self.tile_set, self.quads[16], (i-1)*tw, (j-1)*th)
             end
         end
     end
@@ -71,9 +88,9 @@ function load_tiles()
     local image_height = tile_set:getHeight()
 
     local rows = 2
-    local cols = 7
-    local width = (image_width / cols) -2
-    local height = (image_height / rows) -2
+    local cols = 9
+    local width = (image_width / cols)
+    local height = (image_height / rows)
 
     local quads = {}
 
@@ -81,8 +98,8 @@ function load_tiles()
         for j=0, cols-1 do
             table.insert(quads,
                 love.graphics.newQuad(
-                    1+(j)*(width+2),
-                    1+(i)*(height+2),
+                    (j)*(width),
+                    (i)*(height),
                     width, height,
                     image_width, image_height))
         end
