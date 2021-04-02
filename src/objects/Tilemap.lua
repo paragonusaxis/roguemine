@@ -1,15 +1,19 @@
 Tilemap = Class{__includes = Obj}
 
 local ilist = {{-1,-1}, {0,-1}, {1,-1}, {1,0}, {1,1}, {0,1}, {-1,1}, {-1,0}}
-local bmask_pair = {{221, 28}, {119, 7}, {85, 69}, {85,81}, {245, 4}, {125, 1}, {1, 2}, {247, 247}, {127,127} , {119, 112}, {221, 193}, {85, 21}, {85, 84}, {95, 64}, {215, 16}, {1, 2}, {223,223}, {253, 253}}
-
+local bmask_pair = {{213, 20}, {117, 5}, {85, 69}, {85,81}, {245, 4}, {125, 1}, {1, 2}, {247, 247}, {127,127} , {87, 80}, {93, 65}, {85, 21}, {85, 84}, {95, 64}, {215, 16}, {1, 2}, {223,223}, {253, 253}}
+local inters = 7
 
 local bit = require("bit")
 local FF = require 'lib/ff'
 local band, bxor = bit.band, bit.bxor
 
-function Tilemap:init(width, height, wallPercent)
+function Tilemap:init(width, height, wallPercent, seed)
     self.flag = 'visible'
+
+    self.seed = seed or os.time()
+
+    love.math.setRandomSeed(self.seed)
     
     self.wallPercent = wallPercent or 0.45
 
@@ -20,7 +24,26 @@ function Tilemap:init(width, height, wallPercent)
 
     self.quads, self.tile_set, self.tile_w, self.tile_h = load_tiles()
 
-    self:generateCave(7)
+    self:generateCave(inters)
+end
+
+function Tilemap:update()
+    if love.keyboard.wasPressed('r') then
+        self:generateCave(inters)
+    end
+
+    if love.keyboard.wasPressed('tab') then
+        local mx, my = love.mouse.getPosition()
+        local px, py = camera:worldCoords(mx, my)
+        local tx, ty = self:tilePos(px, py)
+        local v = self._map[tx][ty] + 1
+        if v == -1 then
+            v = 18
+        elseif v == 19 then
+            v = 0
+        end
+        self._map[tx][ty] = v
+    end
 end
 
 function Tilemap:generateCave(interations)
@@ -51,6 +74,11 @@ function Tilemap:mapSize()
     return self.width*self.tile_w, self.height*self.tile_h
 end
 
+function Tilemap:tilePos(x, y)
+    return math.floor(x/self.tile_w)+1, math.floor(y/self.tile_h)+1
+end
+
+
 function Tilemap:render()
     local w = self.width
     local h = self.height
@@ -63,10 +91,9 @@ function Tilemap:render()
     for i = 1, w, 1 do
         for j = 1, h, 1 do
             local v = self._map[i][j]
-            if v >= 10 then
-                local t = self._map[i][j] - 10
+            local t = self._map[i][j] - 1
+            if v > 1 then
                 love.graphics.draw(self.tile_set, self.quads[t], (i-1)*tw, (j-1)*th)
-            elseif v > 1 then
                 -- love.graphics.setColor(0,1,0,1)
                 -- love.graphics.rectangle("fill", i*TILE_SIZE, j*TILE_SIZE, TILE_SIZE, TILE_SIZE)
             elseif v == 1 then
@@ -185,9 +212,9 @@ function SolveWallEdgeTiles(map, w, h)
             if isEdgeTile(i, j, map, w, h) then
                 local b = binaryNear(i, j, map, w, h)
                 for index, value in ipairs(bmask_pair) do
-                    if index ~= 7 and index ~= 14 then
+                    if index ~= 7 and index ~= 16 then
                         if checkEdgeTileMask(b, value[1], value[2]) == 0 then
-                            map[i][j] = 10+index
+                            map[i][j] = 1+index
                             break
                         end
                     end

@@ -18,7 +18,7 @@ function PlayState:enter()
     player = Player()
 
     -- creates Tilemap
-    tilemap = Tilemap(50, 50)
+    tilemap = Tilemap(50, 50, 0.45, 123)
 
     -- gets size of word base on map
     worldW, worldH = tilemap:mapSize()
